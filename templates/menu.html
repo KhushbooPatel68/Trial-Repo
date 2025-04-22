@@ -1,0 +1,360 @@
+{% extends "base.html" %}
+
+{% block title %}SmartCafé - Cafeteria Menu{% endblock %}
+
+{% block head_content %}
+<style>
+    .menu-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 1.5rem;
+    }
+    .menu-table th {
+        background-color: #343a40;
+        color: white;
+        text-align: center;
+        padding: 0.5rem;
+        border: 1px solid #dee2e6;
+    }
+    .menu-table td {
+        padding: 0.5rem;
+        border: 1px solid #dee2e6;
+        text-align: center;
+    }
+    .menu-table tr:nth-child(even) {
+        background-color: rgba(0,0,0,0.05);
+    }
+    .log-button {
+        background-color: #4c3c99;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        padding: 0.25rem 0.5rem;
+        font-size: 0.875rem;
+    }
+    .csv-data-badge {
+        background-color: #4c3c99;
+        color: white;
+        padding: 0.25rem 0.5rem;
+        border-radius: 4px;
+        font-size: 0.75rem;
+        font-weight: bold;
+        margin-left: 0.5rem;
+    }
+    .menu-category-heading {
+        margin-top: 2rem;
+        margin-bottom: 1rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 2px solid #4c3c99;
+        display: flex;
+        align-items: center;
+    }
+    @media (max-width: 768px) {
+        .menu-table {
+            display: block;
+            overflow-x: auto;
+            white-space: nowrap;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1>Cafeteria Menu</h1>
+            <a href="{{ url_for('log_meal') }}" class="btn btn-primary">
+                <i class="fas fa-plus-circle me-1"></i> Log Custom Meal
+            </a>
+        </div>
+        <p class="text-muted mb-4">Browse available meals with nutritional information</p>
+    </div>
+    
+    <!-- Search Bar -->
+    <div class="col-12 mb-4">
+        <div class="search-bar">
+            <i class="fas fa-search search-icon"></i>
+            <input type="text" id="food-search" class="form-control search-input" placeholder="Search for food...">
+            <button id="voice-search-btn" class="btn btn-outline-primary" style="display: none; position: absolute; right: 10px; top: 50%; transform: translateY(-50%);">
+                <i class="fas fa-microphone"></i>
+            </button>
+        </div>
+    </div>
+    
+    <!-- CSV Food Data Tables -->
+    <div class="col-12">
+        <!-- Beverages Table -->
+        <div class="menu-category-heading">
+            <h2>Today's Beverage Options</h2>
+            <span class="csv-data-badge">CSV Data</span>
+        </div>
+        
+        <div class="table-responsive">
+            <table class="menu-table">
+                <thead>
+                    <tr>
+                        <th>Drink Name</th>
+                        <th>Calories</th>
+                        <th>Carbs</th>
+                        <th>Protein</th>
+                        <th>Fats</th>
+                        <th>Sodium</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in beverages %}
+                    <tr>
+                        <td>{{ item['Dish Name'] }}</td>
+                        <td>{{ item['Calories (kcal)'] }}</td>
+                        <td>{{ item['Carbohydrate (g)'] }}</td>
+                        <td>{{ item['Protein (g)'] }}</td>
+                        <td>{{ item['Fats (g)'] }}</td>
+                        <td>{{ item['Sodium (mg)'] }}</td>
+                        <td>
+                            <a href="{{ url_for('log_meal', 
+                                    custom_meal_name=item['Dish Name'], 
+                                    custom_meal_calories=item['Calories (kcal)'],
+                                    custom_meal_proteins=item['Protein (g)'],
+                                    custom_meal_carbs=item['Carbohydrate (g)'],
+                                    custom_meal_fats=item['Fats (g)']) }}" 
+                               class="log-button">
+                                <i class="fas fa-plus"></i> Log
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        
+        {% if main_courses %}
+        <!-- Main Courses Table -->
+        <div class="menu-category-heading">
+            <h2>Main Courses</h2>
+            <span class="csv-data-badge">CSV Data</span>
+        </div>
+        
+        <div class="table-responsive">
+            <table class="menu-table">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Calories</th>
+                        <th>Carbs</th>
+                        <th>Protein</th>
+                        <th>Fats</th>
+                        <th>Fiber</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in main_courses %}
+                    <tr>
+                        <td>{{ item['Dish Name'] }}</td>
+                        <td>{{ item['Calories (kcal)'] }}</td>
+                        <td>{{ item['Carbohydrate (g)'] }}</td>
+                        <td>{{ item['Protein (g)'] }}</td>
+                        <td>{{ item['Fats (g)'] }}</td>
+                        <td>{{ item['Fibre (g)'] }}</td>
+                        <td>
+                            <a href="{{ url_for('log_meal', 
+                                    custom_meal_name=item['Dish Name'], 
+                                    custom_meal_calories=item['Calories (kcal)'],
+                                    custom_meal_proteins=item['Protein (g)'],
+                                    custom_meal_carbs=item['Carbohydrate (g)'],
+                                    custom_meal_fats=item['Fats (g)']) }}" 
+                               class="log-button">
+                                <i class="fas fa-plus"></i> Log
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% endif %}
+    </div>
+    
+    <form action="{{ url_for('add_meal') }}" method="POST">
+        <!-- Meal Type Selection -->
+        <div class="col-12 mb-4 mt-5">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Select Meal Type</h5>
+                    <div class="btn-group w-100" role="group">
+                        <input type="radio" class="btn-check" name="meal_type" id="breakfast" value="breakfast" checked>
+                        <label class="btn btn-outline-primary" for="breakfast">Breakfast</label>
+                        
+                        <input type="radio" class="btn-check" name="meal_type" id="lunch" value="lunch">
+                        <label class="btn btn-outline-primary" for="lunch">Lunch</label>
+                        
+                        <input type="radio" class="btn-check" name="meal_type" id="dinner" value="dinner">
+                        <label class="btn btn-outline-primary" for="dinner">Dinner</label>
+                        
+                        <input type="radio" class="btn-check" name="meal_type" id="snack" value="snack">
+                        <label class="btn btn-outline-primary" for="snack">Snack</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Food Categories -->
+        <div class="col-12">
+            <!-- Protein Foods -->
+            <div class="menu-category">
+                <h3>Protein</h3>
+                
+                {% for food in foods %}
+                    {% if food.category == 'protein' %}
+                        <div class="menu-item" data-food-id="{{ food.id }}">
+                            <div class="form-check">
+                                <input class="form-check-input food-select-checkbox" type="checkbox" id="food-{{ food.id }}" name="food_id" value="{{ food.id }}" data-food-id="{{ food.id }}">
+                                <label class="form-check-label" for="food-{{ food.id }}"></label>
+                            </div>
+                            
+                            <div class="menu-item-info">
+                                <div class="menu-item-name">{{ food.get_name(locale) }}</div>
+                                <div class="menu-item-nutrition nutrition-display" 
+                                     data-food-id="{{ food.id }}"
+                                     data-base-calories="{{ food.calories }}"
+                                     data-base-protein="{{ food.protein }}"
+                                     data-base-carbs="{{ food.carbs }}"
+                                     data-base-fat="{{ food.fat }}">
+                                    {{ food.calories }} kcal | P: {{ food.protein }}g | C: {{ food.carbs }}g | F: {{ food.fat }}g
+                                </div>
+                            </div>
+                            
+                            <div class="portion-selector">
+                                <button type="button" class="portion-btn" data-food-id="{{ food.id }}" data-size="small">S</button>
+                                <button type="button" class="portion-btn active" data-food-id="{{ food.id }}" data-size="medium">M</button>
+                                <button type="button" class="portion-btn" data-food-id="{{ food.id }}" data-size="large">L</button>
+                                <input type="hidden" name="portion_size" value="medium" data-food-id="{{ food.id }}">
+                            </div>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+            
+            <!-- Carbs Foods -->
+            <div class="menu-category">
+                <h3>Carbs</h3>
+                
+                {% for food in foods %}
+                    {% if food.category == 'carbs' %}
+                        <div class="menu-item" data-food-id="{{ food.id }}">
+                            <div class="form-check">
+                                <input class="form-check-input food-select-checkbox" type="checkbox" id="food-{{ food.id }}" name="food_id" value="{{ food.id }}" data-food-id="{{ food.id }}">
+                                <label class="form-check-label" for="food-{{ food.id }}"></label>
+                            </div>
+                            
+                            <div class="menu-item-info">
+                                <div class="menu-item-name">{{ food.get_name(locale) }}</div>
+                                <div class="menu-item-nutrition nutrition-display" 
+                                     data-food-id="{{ food.id }}"
+                                     data-base-calories="{{ food.calories }}"
+                                     data-base-protein="{{ food.protein }}"
+                                     data-base-carbs="{{ food.carbs }}"
+                                     data-base-fat="{{ food.fat }}">
+                                    {{ food.calories }} kcal | P: {{ food.protein }}g | C: {{ food.carbs }}g | F: {{ food.fat }}g
+                                </div>
+                            </div>
+                            
+                            <div class="portion-selector">
+                                <button type="button" class="portion-btn" data-food-id="{{ food.id }}" data-size="small">S</button>
+                                <button type="button" class="portion-btn active" data-food-id="{{ food.id }}" data-size="medium">M</button>
+                                <button type="button" class="portion-btn" data-food-id="{{ food.id }}" data-size="large">L</button>
+                                <input type="hidden" name="portion_size" value="medium" data-food-id="{{ food.id }}">
+                            </div>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+            
+            <!-- Vegetables -->
+            <div class="menu-category">
+                <h3>Vegetables</h3>
+                
+                {% for food in foods %}
+                    {% if food.category == 'vegetables' %}
+                        <div class="menu-item" data-food-id="{{ food.id }}">
+                            <div class="form-check">
+                                <input class="form-check-input food-select-checkbox" type="checkbox" id="food-{{ food.id }}" name="food_id" value="{{ food.id }}" data-food-id="{{ food.id }}">
+                                <label class="form-check-label" for="food-{{ food.id }}"></label>
+                            </div>
+                            
+                            <div class="menu-item-info">
+                                <div class="menu-item-name">{{ food.get_name(locale) }}</div>
+                                <div class="menu-item-nutrition nutrition-display" 
+                                     data-food-id="{{ food.id }}"
+                                     data-base-calories="{{ food.calories }}"
+                                     data-base-protein="{{ food.protein }}"
+                                     data-base-carbs="{{ food.carbs }}"
+                                     data-base-fat="{{ food.fat }}">
+                                    {{ food.calories }} kcal | P: {{ food.protein }}g | C: {{ food.carbs }}g | F: {{ food.fat }}g
+                                </div>
+                            </div>
+                            
+                            <div class="portion-selector">
+                                <button type="button" class="portion-btn" data-food-id="{{ food.id }}" data-size="small">S</button>
+                                <button type="button" class="portion-btn active" data-food-id="{{ food.id }}" data-size="medium">M</button>
+                                <button type="button" class="portion-btn" data-food-id="{{ food.id }}" data-size="large">L</button>
+                                <input type="hidden" name="portion_size" value="medium" data-food-id="{{ food.id }}">
+                            </div>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+            
+            <!-- Custom Foods -->
+            {% set custom_foods = foods|selectattr('is_custom', 'equalto', true)|list %}
+            {% if custom_foods %}
+                <div class="menu-category">
+                    <h3>Custom Foods</h3>
+                    
+                    {% for food in custom_foods %}
+                        <div class="menu-item" data-food-id="{{ food.id }}">
+                            <div class="form-check">
+                                <input class="form-check-input food-select-checkbox" type="checkbox" id="food-{{ food.id }}" name="food_id" value="{{ food.id }}" data-food-id="{{ food.id }}">
+                                <label class="form-check-label" for="food-{{ food.id }}"></label>
+                            </div>
+                            
+                            <div class="menu-item-info">
+                                <div class="menu-item-name">{{ food.name }}</div>
+                                <div class="menu-item-nutrition nutrition-display" 
+                                     data-food-id="{{ food.id }}"
+                                     data-base-calories="{{ food.calories }}"
+                                     data-base-protein="{{ food.protein }}"
+                                     data-base-carbs="{{ food.carbs }}"
+                                     data-base-fat="{{ food.fat }}">
+                                    {{ food.calories }} kcal | P: {{ food.protein }}g | C: {{ food.carbs }}g | F: {{ food.fat }}g
+                                </div>
+                            </div>
+                            
+                            <div class="portion-selector">
+                                <button type="button" class="portion-btn" data-food-id="{{ food.id }}" data-size="small">S</button>
+                                <button type="button" class="portion-btn active" data-food-id="{{ food.id }}" data-size="medium">M</button>
+                                <button type="button" class="portion-btn" data-food-id="{{ food.id }}" data-size="large">L</button>
+                                <input type="hidden" name="portion_size" value="medium" data-food-id="{{ food.id }}">
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+        
+        <!-- Add Meal Button -->
+        <div class="col-12 mt-4 mb-5">
+            <div class="fixed-bottom p-3 bg-white border-top" style="display: none;" id="add-meal-btn">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span>Selected: <span id="selected-count">0</span> items</span>
+                </div>
+                <button type="submit" class="btn btn-primary btn-block w-100">
+                    <i class="fas fa-plus-circle"></i> Add to My Meals
+                </button>
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock %}

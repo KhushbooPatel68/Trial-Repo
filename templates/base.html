@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="{{ locale }}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}SmartCafé{% endblock %}</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    
+    {% block head_content %}{% endblock %}
+</head>
+<body>
+    <!-- Top Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="{{ url_for('index') }}">
+                <i class="fas fa-utensils me-2"></i>SmartCafé
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    {% if current_user.is_authenticated %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('index') }}">{{ _('Dashboard') }}</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('menu') }}">{{ _('Food Menu') }}</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('log_meal') }}">{{ _('Log Meal') }}</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('history') }}">{{ _('History') }}</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('achievements') }}">{{ _('Achievements') }}</a>
+                    </li>
+                    {% endif %}
+                </ul>
+                <ul class="navbar-nav">
+                    {% if current_user.is_authenticated %}
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="languageDropdown" role="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-language me-1"></i>{{ _('Language') }}
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="{{ url_for('set_language', language='en') }}">English</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('set_language', language='es') }}">Español</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('set_language', language='hi') }}">हिन्दी</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('set_language', language='kn') }}">ಕನ್ನಡ</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('set_language', language='ta') }}">தமிழ்</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('set_language', language='te') }}">తెలుగు</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('set_language', language='mr') }}">मराठी</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('set_language', language='gu') }}">ગુજરાતી</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-user-circle me-1"></i>{{ current_user.username }}
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="{{ url_for('profile') }}">{{ _('Profile') }}</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="{{ url_for('logout') }}">{{ _('Logout') }}</a></li>
+                        </ul>
+                    </li>
+                    {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('login') }}">{{ _('Login') }}</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('register') }}">{{ _('Register') }}</a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Bottom Navigation for Mobile -->
+    {% if current_user.is_authenticated %}
+    <nav class="mobile-nav d-md-none fixed-bottom">
+        <div class="container">
+            <div class="row text-center">
+                <div class="col">
+                    <a href="{{ url_for('index') }}" class="mobile-nav-link">
+                        <i class="fas fa-home"></i>
+                        <span>{{ _('Home') }}</span>
+                    </a>
+                </div>
+                <div class="col">
+                    <a href="{{ url_for('menu') }}" class="mobile-nav-link">
+                        <i class="fas fa-utensils"></i>
+                        <span>{{ _('Menu') }}</span>
+                    </a>
+                </div>
+                <div class="col">
+                    <a href="{{ url_for('log_meal') }}" class="mobile-nav-link">
+                        <i class="fas fa-plus-circle"></i>
+                        <span>{{ _('Log Meal') }}</span>
+                    </a>
+                </div>
+                <div class="col">
+                    <a href="{{ url_for('history') }}" class="mobile-nav-link">
+                        <i class="fas fa-history"></i>
+                        <span>{{ _('History') }}</span>
+                    </a>
+                </div>
+                <div class="col">
+                    <a href="{{ url_for('profile') }}" class="mobile-nav-link">
+                        <i class="fas fa-user"></i>
+                        <span>{{ _('Profile') }}</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+    {% endif %}
+
+    <!-- Content Container -->
+    <main class="container mt-4 {% if current_user.is_authenticated %}mb-5 pb-5{% endif %}">
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        
+        <!-- Main Content -->
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-light py-3 mt-5">
+        <div class="container text-center">
+            <p class="mb-0">© {{ current_year }} SmartCafé | {{ _('All rights reserved') }}</p>
+        </div>
+    </footer>
+
+    <!-- Bootstrap Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Custom JavaScript -->
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    
+    {% block scripts %}{% endblock %}
+</body>
+</html>

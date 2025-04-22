@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+
+{% block title %}SmartCafé - Your History{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h1 class="mb-4">Nutrition History</h1>
+    </div>
+    
+    <!-- Date Range Selector -->
+    <div class="col-12 mb-4">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Select Date Range</h5>
+                <div class="row">
+                    <div class="col-6">
+                        <label for="start-date" class="form-label">Start Date</label>
+                        <input type="date" id="start-date" class="form-control" value="{{ start_date.strftime('%Y-%m-%d') }}">
+                    </div>
+                    <div class="col-6">
+                        <label for="end-date" class="form-label">End Date</label>
+                        <input type="date" id="end-date" class="form-control" value="{{ end_date.strftime('%Y-%m-%d') }}">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Nutrition Charts -->
+    <div class="col-12 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Nutrition Trends</h5>
+            </div>
+            <div class="card-body">
+                <div class="chart-container" id="nutrition-chart">
+                    <canvas id="calories-chart"></canvas>
+                </div>
+                <div class="chart-container">
+                    <canvas id="macros-chart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Meal History -->
+    <div class="col-12">
+        <h3 class="mb-3">Meal Details</h3>
+        
+        {% set current_date = None %}
+        
+        {% for meal in meals %}
+            {% if current_date != meal.date %}
+                {% set current_date = meal.date %}
+                <h5 class="mt-4 mb-2">{{ meal.date.strftime('%A, %B %d, %Y') }}</h5>
+            {% endif %}
+            
+            <div class="card meal-card">
+                <div class="meal-header">
+                    <div class="meal-type">{{ meal.meal_type|capitalize }}</div>
+                    <div class="meal-time">{{ meal.time.strftime('%I:%M %p') }}</div>
+                </div>
+                
+                <div class="card-body p-0">
+                    {% for item in meal.items %}
+                        <div class="meal-item">
+                            <div class="meal-item-name">{{ item.food.get_name(locale) }}</div>
+                            <div class="meal-item-portion">{{ item.portion_size|capitalize }}</div>
+                            <div class="meal-item-cals">{{ item.food.get_nutrition_for_portion(item.portion_size).calories }} kcal</div>
+                        </div>
+                    {% endfor %}
+                </div>
+                
+                <div class="meal-total">
+                    Total: {{ meal.total_nutrition.calories }} kcal | P: {{ meal.total_nutrition.protein }}g | C: {{ meal.total_nutrition.carbs }}g | F: {{ meal.total_nutrition.fat }}g
+                </div>
+            </div>
+        {% else %}
+            <div class="alert alert-info">
+                No meals recorded in this date range.
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

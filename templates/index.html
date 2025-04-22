@@ -1,0 +1,267 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ _('Dashboard') }} - SmartCafé{% endblock %}
+
+{% block content %}
+<div class="container">
+    <!-- User greeting and summary -->
+    <div class="row">
+        <div class="col-md-12">
+            <h1 class="mb-4">{{ _('Hello, %(username)s', username=current_user.username) }}</h1>
+        </div>
+    </div>
+
+    <!-- Daily nutrition summary card -->
+    <div class="row mb-4">
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">{{ _('Today\'s Summary') }}</h5>
+                    <button class="btn btn-sm btn-primary" onclick="loadNutritionData()">
+                        <i class="fas fa-sync-alt me-1"></i>{{ _('Refresh') }}
+                    </button>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="daily-summary">
+                                <h5 class="card-title">{{ _('Calories') }}</h5>
+                                <div class="d-flex justify-content-between align-items-end mb-1">
+                                    <div class="display-4 fw-bold text-primary">
+                                        {{ daily_nutrition.calories|default(0, true)|int }}
+                                    </div>
+                                    <div class="text-muted">
+                                        / {{ current_user.profile.target_calories|default(2000, true)|int }}
+                                    </div>
+                                </div>
+                                <div class="progress mb-3" style="height: 10px;">
+                                    {% set calorie_percent = (daily_nutrition.calories|default(0, true) / current_user.profile.target_calories|default(2000, true) * 100)|int %}
+                                    {% if calorie_percent > 100 %}
+                                        <div class="progress-bar bg-danger" role="progressbar" style="width: 100%" 
+                                             aria-valuenow="{{ calorie_percent }}" aria-valuemin="0" aria-valuemax="100">
+                                        </div>
+                                    {% else %}
+                                        <div class="progress-bar bg-primary" role="progressbar" style="width: {{ calorie_percent }}%" 
+                                             aria-valuenow="{{ calorie_percent }}" aria-valuemin="0" aria-valuemax="100">
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                
+                                <!-- Macronutrients -->
+                                <div class="macro-progress">
+                                    <div class="d-flex justify-content-between">
+                                        <div>{{ _('Protein') }}</div>
+                                        <div>
+                                            {{ daily_nutrition.protein|default(0, true)|int }}g / 
+                                            {{ current_user.profile.target_protein|default(50, true)|int }}g
+                                        </div>
+                                    </div>
+                                    <div class="progress mt-1">
+                                        {% set protein_percent = (daily_nutrition.protein|default(0, true) / current_user.profile.target_protein|default(50, true) * 100)|int %}
+                                        <div class="progress-bar bg-success" role="progressbar" style="width: {{ protein_percent if protein_percent <= 100 else 100 }}%" 
+                                             aria-valuenow="{{ protein_percent }}" aria-valuemin="0" aria-valuemax="100">
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="macro-progress">
+                                    <div class="d-flex justify-content-between">
+                                        <div>{{ _('Carbs') }}</div>
+                                        <div>
+                                            {{ daily_nutrition.carbs|default(0, true)|int }}g / 
+                                            {{ current_user.profile.target_carbs|default(250, true)|int }}g
+                                        </div>
+                                    </div>
+                                    <div class="progress mt-1">
+                                        {% set carbs_percent = (daily_nutrition.carbs|default(0, true) / current_user.profile.target_carbs|default(250, true) * 100)|int %}
+                                        <div class="progress-bar bg-info" role="progressbar" style="width: {{ carbs_percent if carbs_percent <= 100 else 100 }}%" 
+                                             aria-valuenow="{{ carbs_percent }}" aria-valuemin="0" aria-valuemax="100">
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="macro-progress">
+                                    <div class="d-flex justify-content-between">
+                                        <div>{{ _('Fat') }}</div>
+                                        <div>
+                                            {{ daily_nutrition.fat|default(0, true)|int }}g / 
+                                            {{ current_user.profile.target_fat|default(65, true)|int }}g
+                                        </div>
+                                    </div>
+                                    <div class="progress mt-1">
+                                        {% set fat_percent = (daily_nutrition.fat|default(0, true) / current_user.profile.target_fat|default(65, true) * 100)|int %}
+                                        <div class="progress-bar bg-warning" role="progressbar" style="width: {{ fat_percent if fat_percent <= 100 else 100 }}%" 
+                                             aria-valuenow="{{ fat_percent }}" aria-valuemin="0" aria-valuemax="100">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <h5 class="card-title">{{ _('Today\'s Meals') }}</h5>
+                            {% if meals %}
+                                <div class="list-group">
+                                    {% for meal in meals %}
+                                    <div class="list-group-item list-group-item-action flex-column align-items-start">
+                                        <div class="d-flex w-100 justify-content-between">
+                                            <h6 class="mb-1">{{ _(meal.meal_type|capitalize) }}</h6>
+                                            <small>{{ meal.time.strftime('%H:%M') if meal.time else '' }}</small>
+                                        </div>
+                                        {% if meal.items %}
+                                            <p class="mb-1">
+                                                {% for item in meal.items %}
+                                                    {% if loop.index > 1 %}, {% endif %}
+                                                    {% if item.food is defined and item.food %}
+                                                        {% if 'get_name' in item.food|attr_list %}
+                                                            {{ item.food.get_name(g.locale) }}
+                                                        {% else %}
+                                                            {{ item.food.name }}
+                                                        {% endif %}
+                                                    {% else %}
+                                                        {{ _('Unknown food') }}
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </p>
+                                        {% else %}
+                                            <p class="mb-1">
+                                                {% if meal.custom_meal_name is defined %}
+                                                    {{ meal.custom_meal_name }}
+                                                {% else %}
+                                                    {{ _('Custom meal') }}
+                                                {% endif %}
+                                            </p>
+                                        {% endif %}
+                                        <small>
+                                            {% if meal.items is defined and meal.items %}
+                                                {% set total_calories = 0 %}
+                                                {% for item in meal.items %}
+                                                    {% if item.food and item.food.calories %}
+                                                        {% set total_calories = total_calories + item.food.calories %}
+                                                    {% endif %}
+                                                {% endfor %}
+                                                {{ total_calories|int }} {{ _('calories') }}
+                                            {% else %}
+                                                0 {{ _('calories') }}
+                                            {% endif %}
+                                        </small>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                                <div class="text-end mt-3">
+                                    <a href="{{ url_for('menu') }}" class="btn btn-primary">
+                                        <i class="fas fa-plus me-1"></i>{{ _('Add Meal') }}
+                                    </a>
+                                </div>
+                            {% else %}
+                                <div class="alert alert-info">
+                                    <p>{{ _('No meals logged for today.') }}</p>
+                                    <a href="{{ url_for('menu') }}" class="btn btn-primary">
+                                        <i class="fas fa-plus me-1"></i>{{ _('Add Your First Meal') }}
+                                    </a>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">{{ _('Your BMI Status') }}</h5>
+                </div>
+                <div class="card-body">
+                    {% if current_user.profile and current_user.profile.height and current_user.profile.weight %}
+                        {% set bmi = ((current_user.profile.weight / (current_user.profile.height/100)**2) * 10)|int / 10 %}
+                        
+                        <div class="text-center mb-3">
+                            <span class="display-4 fw-bold 
+                                {% if bmi < 18.5 %}text-warning{% elif bmi < 25 %}text-success{% elif bmi < 30 %}text-warning{% else %}text-danger{% endif %}">
+                                {{ bmi }}
+                            </span>
+                        </div>
+                        
+                        <div class="progress" style="height: 30px;">
+                            <div class="progress-bar bg-info" role="progressbar" style="width: 25%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">
+                                {{ _('Underweight') }}
+                            </div>
+                            <div class="progress-bar bg-success" role="progressbar" style="width: 25%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">
+                                {{ _('Normal') }}
+                            </div>
+                            <div class="progress-bar bg-warning" role="progressbar" style="width: 25%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">
+                                {{ _('Overweight') }}
+                            </div>
+                            <div class="progress-bar bg-danger" role="progressbar" style="width: 25%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">
+                                {{ _('Obese') }}
+                            </div>
+                        </div>
+                        
+                        {% if bmi < 18.5 %}
+                            <p class="mt-3">{{ _('You are underweight. Focus on gaining weight through nutrient-dense foods.') }}</p>
+                        {% elif bmi < 25 %}
+                            <p class="mt-3">{{ _('Your BMI is within the normal range. Keep up the good work!') }}</p>
+                        {% elif bmi < 30 %}
+                            <p class="mt-3">{{ _('You are overweight. Consider moderately reducing calorie intake and increasing physical activity.') }}</p>
+                        {% else %}
+                            <p class="mt-3">{{ _('Your BMI indicates obesity. Please consult a healthcare professional for guidance.') }}</p>
+                        {% endif %}
+                        
+                        <div class="text-center mt-3">
+                            <a href="{{ url_for('profile') }}" class="btn btn-outline-primary">
+                                {{ _('Update Your Profile') }}
+                            </a>
+                        </div>
+                    {% else %}
+                        <div class="alert alert-warning">
+                            <h6>{{ _('Profile Incomplete') }}</h6>
+                            <p>{{ _('Please update your profile with your height and weight to see your BMI information.') }}</p>
+                            <a href="{{ url_for('profile') }}" class="btn btn-primary">
+                                {{ _('Complete Your Profile') }}
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Weekly Charts -->
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">{{ _('Weekly Nutrition Trends') }}</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="chart-container" style="height: 300px;">
+                                <canvas id="weekly-calories-chart" data-chart-data='{{ weekly_data }}'></canvas>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="chart-container" style="height: 300px;">
+                                <canvas id="macros-chart" data-chart-data='{{ weekly_data }}'></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Set active mobile nav link
+        document.querySelectorAll('.mobile-nav-link').forEach(link => {
+            if (link.getAttribute('href') === window.location.pathname) {
+                link.classList.add('active');
+            }
+        });
+    });
+</script>
+{% endblock %}

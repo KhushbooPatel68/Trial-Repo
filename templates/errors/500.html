@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ _('Server Error') }}{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center my-5">
+        <div class="col-md-8 text-center">
+            <h1 class="display-1 text-muted">500</h1>
+            <h2>{{ _('Server Error') }}</h2>
+            <p class="lead mt-3">{{ _('Something went wrong on our servers. We are working to fix the issue.') }}</p>
+            <a href="{{ url_for('index') }}" class="btn btn-primary mt-3">
+                <i class="fas fa-home me-2"></i>{{ _('Back to Home') }}
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

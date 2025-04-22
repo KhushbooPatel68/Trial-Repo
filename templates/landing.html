@@ -1,0 +1,148 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ _('Welcome to SmartCafé') }}{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-lg-8 text-center">
+            <div class="mt-5 mb-5">
+                <h1 class="display-4 fw-bold text-primary">{{ _('Welcome to SmartCafé') }}</h1>
+                <p class="lead mt-3">{{ _('Track your office meals, monitor nutrition, and make healthier choices.') }}</p>
+            </div>
+            
+            <div class="row mt-5">
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100">
+                        <div class="card-body text-center">
+                            <i class="fas fa-utensils fa-3x text-primary mb-3"></i>
+                            <h5 class="card-title">{{ _('Easy Meal Tracking') }}</h5>
+                            <p class="card-text">{{ _('Log your cafeteria meals with portion control and detailed nutrition information.') }}</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100">
+                        <div class="card-body text-center">
+                            <i class="fas fa-language fa-3x text-primary mb-3"></i>
+                            <h5 class="card-title">{{ _('Multilingual Support') }}</h5>
+                            <p class="card-text">{{ _('Available in English, Hindi, Kannada, Tamil, Telugu, Marathi, and Gujarati.') }}</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100">
+                        <div class="card-body text-center">
+                            <i class="fas fa-chart-line fa-3x text-primary mb-3"></i>
+                            <h5 class="card-title">{{ _('Nutrition Insights') }}</h5>
+                            <p class="card-text">{{ _('Track your calorie intake and macronutrients with detailed visual charts.') }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-5">
+                <a href="{{ url_for('register') }}" class="btn btn-primary btn-lg me-3">{{ _('Get Started') }}</a>
+                <a href="{{ url_for('login') }}" class="btn btn-outline-primary btn-lg">{{ _('Sign In') }}</a>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Feature Highlights -->
+    <div class="row mt-5 pt-5 border-top">
+        <div class="col-md-6 mb-4">
+            <h3 class="mb-3">{{ _('Daily Nutrition Dashboard') }}</h3>
+            <p>{{ _('Monitor your daily calorie intake and macronutrient distribution with our easy-to-understand dashboard.') }}</p>
+            <p>{{ _('Set personal targets based on your BMI, activity level, and health goals.') }}</p>
+        </div>
+        <div class="col-md-6 mb-4">
+            <div class="card bg-light">
+                <div class="card-body">
+                    <div class="daily-summary">
+                        <h5>{{ _('Sample Daily Summary') }}</h5>
+                        <div class="d-flex justify-content-between">
+                            <div>{{ _('Calories') }}</div>
+                            <div class="text-primary fw-bold">1,450 / 2,000</div>
+                        </div>
+                        <div class="progress mb-3 mt-1">
+                            <div class="progress-bar bg-primary" role="progressbar" style="width: 72%" aria-valuenow="72" aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+                        
+                        <div class="macro-progress">
+                            <div class="d-flex justify-content-between">
+                                <div>{{ _('Protein') }}</div>
+                                <div>65g / 90g</div>
+                            </div>
+                            <div class="progress mt-1">
+                                <div class="progress-bar bg-success" role="progressbar" style="width: 72%" aria-valuenow="72" aria-valuemin="0" aria-valuemax="100"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="macro-progress">
+                            <div class="d-flex justify-content-between">
+                                <div>{{ _('Carbs') }}</div>
+                                <div>180g / 250g</div>
+                            </div>
+                            <div class="progress mt-1">
+                                <div class="progress-bar bg-info" role="progressbar" style="width: 72%" aria-valuenow="72" aria-valuemin="0" aria-valuemax="100"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="macro-progress">
+                            <div class="d-flex justify-content-between">
+                                <div>{{ _('Fat') }}</div>
+                                <div>45g / 65g</div>
+                            </div>
+                            <div class="progress mt-1">
+                                <div class="progress-bar bg-warning" role="progressbar" style="width: 69%" aria-valuenow="69" aria-valuemin="0" aria-valuemax="100"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row mt-4 mb-5">
+        <div class="col-md-6 order-md-2 mb-4">
+            <h3 class="mb-3">{{ _('Multilingual Food Database') }}</h3>
+            <p>{{ _('Our comprehensive food database includes popular Indian dishes with names in multiple languages.') }}</p>
+            <p>{{ _('Get accurate nutrition information for regional favorites from all across India.') }}</p>
+        </div>
+        <div class="col-md-6 order-md-1 mb-4">
+            <div class="card bg-light">
+                <div class="card-body">
+                    <div class="food-item">
+                        <h5>{{ _('Masala Dosa') }} / मसाला डोसा / ಮಸಾಲೆ ದೋಸೆ</h5>
+                        <div class="nutrition-info">
+                            <span class="me-2">{{ _('Calories') }}: 250</span>
+                            <span class="me-2">{{ _('Protein') }}: 5g</span>
+                            <span class="me-2">{{ _('Carbs') }}: 40g</span>
+                            <span>{{ _('Fat') }}: 8g</span>
+                        </div>
+                        <div class="portion-selector mt-2">
+                            <div class="portion-option" data-size="small">{{ _('Small') }}</div>
+                            <div class="portion-option active" data-size="medium">{{ _('Medium') }}</div>
+                            <div class="portion-option" data-size="large">{{ _('Large') }}</div>
+                        </div>
+                    </div>
+                    <div class="food-item">
+                        <h5>{{ _('Paneer Butter Masala') }} / पनीर बटर मसाला / பன்னீர் பட்டர் மசாலா</h5>
+                        <div class="nutrition-info">
+                            <span class="me-2">{{ _('Calories') }}: 380</span>
+                            <span class="me-2">{{ _('Protein') }}: 15g</span>
+                            <span class="me-2">{{ _('Carbs') }}: 12g</span>
+                            <span>{{ _('Fat') }}: 30g</span>
+                        </div>
+                        <div class="portion-selector mt-2">
+                            <div class="portion-option" data-size="small">{{ _('Small') }}</div>
+                            <div class="portion-option active" data-size="medium">{{ _('Medium') }}</div>
+                            <div class="portion-option" data-size="large">{{ _('Large') }}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

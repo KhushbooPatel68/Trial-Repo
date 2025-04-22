@@ -1,0 +1,116 @@
+1. Home Dashboard Page
+Show a daily calorie tracker:
+
+Calories consumed today
+
+Daily goal (auto-calculated)
+
+Remaining calories
+
+Display logged meals with:
+
+Dish name, portion size, calories, and nutrients
+
+Visual representation:
+
+Bar or pie chart using Chart.js
+
+Personalized greeting using the user’s name
+
+📤 2. Log Meal Page
+Input box with autocomplete from CSV-based food data
+
+Read meals from a CSV file (meals.csv) with:
+
+Food name, calories, portion size, macros, language
+
+Show suggestions as the user types (real-time matching)
+
+On selecting a dish:
+
+Add it to today’s meal log in SQLite
+
+Immediately update the home dashboard
+
+Confirm meal addition visually
+
+👤 3. Signup & Profile Setup Page
+After user signs up or logs in for the first time, prompt them to fill in:
+
+Age, gender, height, weight, activity level
+
+Calculate:
+
+BMI = weight / height²
+
+Daily calorie needs using Mifflin-St Jeor equation
+
+Adjust calorie goal based on user’s intent (lose, gain, maintain weight)
+
+Store this in user profile for use across dashboard and logging
+
+Show BMI status and recommended intake
+
+⚙️ 4. Profile Page
+View/edit:
+
+Personal info (age, gender, weight, etc.)
+
+Health goal
+
+Activity level
+
+Recalculate BMI and calorie goals on update
+
+Option to reset daily log
+
+Optional: Language selection for multilingual support (e.g., English, Hindi, Tamil)
+
+📊 5. Stats/Insights Page
+Weekly graph showing:
+
+Calories consumed each day
+
+Target vs actual
+
+Macronutrient breakdown (optional)
+
+Motivational badge or comment based on user's progress
+
+🔐 6. Login/Logout/Register Pages
+User-friendly login and registration
+
+Validation for required fields
+
+Flash messages for login success/failure
+
+Persistent session (e.g., Flask-Login)
+
+Redirect to dashboard after login
+
+🧠 Other Key Functional Requirements
+Mobile-First Design: All components should scale well on mobile devices. Use Bootstrap or Tailwind CSS with mobile breakpoints.
+
+Database: Use SQLite with SQLAlchemy models:
+
+User, MealLog, and optionally FoodItem if syncing CSV into DB
+
+CSV Integration: Meal search should not require internet — read from local CSV (meals.csv)
+
+Language Tags: Optionally support Indian languages in food search (like Kannada, Hindi)
+
+Consistent UI Elements: Buttons, alerts, cards, and menus should match those in the working app.
+
+📦 Expected Output
+Fully functional multi-page Flask app
+
+All logic from the first app integrated
+
+Responsive templates with navigation
+
+Live dashboard + meal log with CSV integration
+
+SQLite database persistence
+
+README with run instructions
+

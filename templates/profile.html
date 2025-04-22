@@ -1,0 +1,131 @@
+{% extends "base.html" %}
+
+{% block title %}SmartCafé - Your Profile{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h1 class="mb-4">Your Profile</h1>
+    </div>
+    
+    <div class="col-12 col-md-8 mx-auto">
+        <div class="card">
+            <div class="card-body">
+                <div class="profile-picture">
+                    <i class="fas fa-user"></i>
+                </div>
+                
+                <h3 class="text-center mb-4">{{ current_user.username }}</h3>
+                
+                <form method="POST" action="{{ url_for('profile') }}">
+                    <h4 class="mb-3">Personal Information</h4>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6 mb-3">
+                            <label for="height" class="form-label required">Height (cm)</label>
+                            <input type="number" class="form-control" id="height" name="height" value="{{ profile.height or '' }}" step="0.1" required>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="weight" class="form-label required">Weight (kg)</label>
+                            <input type="number" class="form-control" id="weight" name="weight" value="{{ profile.weight or '' }}" step="0.1" required>
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-4 mb-3">
+                            <label for="age" class="form-label required">Age</label>
+                            <input type="number" class="form-control" id="age" name="age" value="{{ profile.age or '' }}" required>
+                        </div>
+                        
+                        <div class="col-md-4 mb-3">
+                            <label for="gender" class="form-label required">Gender</label>
+                            <select class="form-control" id="gender" name="gender" required>
+                                <option value="">Select...</option>
+                                <option value="male" {% if profile.gender == 'male' %}selected{% endif %}>Male</option>
+                                <option value="female" {% if profile.gender == 'female' %}selected{% endif %}>Female</option>
+                                <option value="other" {% if profile.gender == 'other' %}selected{% endif %}>Other</option>
+                            </select>
+                        </div>
+                        
+                        <div class="col-md-4 mb-3">
+                            <label for="activity_level" class="form-label required">Activity Level</label>
+                            <select class="form-control" id="activity_level" name="activity_level" required>
+                                <option value="">Select...</option>
+                                <option value="sedentary" {% if profile.activity_level == 'sedentary' %}selected{% endif %}>Sedentary (office job)</option>
+                                <option value="light" {% if profile.activity_level == 'light' %}selected{% endif %}>Light Exercise (1-2 days/week)</option>
+                                <option value="moderate" {% if profile.activity_level == 'moderate' %}selected{% endif %}>Moderate Exercise (3-5 days/week)</option>
+                                <option value="active" {% if profile.activity_level == 'active' %}selected{% endif %}>Active (6-7 days/week)</option>
+                                <option value="very_active" {% if profile.activity_level == 'very_active' %}selected{% endif %}>Very Active (2x per day)</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <h4 class="mb-3 mt-4">Nutrition Targets</h4>
+                    
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            {% if profile.target_calories %}
+                                <div class="nutrition-summary">
+                                    <div class="nutrition-item">
+                                        <div class="nutrition-value">{{ profile.target_calories }}</div>
+                                        <div class="nutrition-label">Calories</div>
+                                    </div>
+                                    <div class="nutrition-item">
+                                        <div class="nutrition-value">{{ profile.target_protein }}</div>
+                                        <div class="nutrition-label">Protein (g)</div>
+                                    </div>
+                                    <div class="nutrition-item">
+                                        <div class="nutrition-value">{{ profile.target_carbs }}</div>
+                                        <div class="nutrition-label">Carbs (g)</div>
+                                    </div>
+                                    <div class="nutrition-item">
+                                        <div class="nutrition-value">{{ profile.target_fat }}</div>
+                                        <div class="nutrition-label">Fat (g)</div>
+                                    </div>
+                                </div>
+                                <p class="text-center mb-0"><small>Based on your profile information</small></p>
+                            {% else %}
+                                <p class="text-center mb-0">Fill in your profile information to calculate nutrition targets.</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <h4 class="mb-3 mt-4">App Preferences</h4>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Language</label>
+                        <div class="lang-selector">
+                            <button type="button" class="lang-btn {% if current_user.locale == 'en' %}active{% endif %}" data-lang="en" onclick="document.getElementById('locale').value='en';">English</button>
+                            <button type="button" class="lang-btn {% if current_user.locale == 'es' %}active{% endif %}" data-lang="es" onclick="document.getElementById('locale').value='es';">Español</button>
+                            <input type="hidden" id="locale" name="locale" value="{{ current_user.locale or 'en' }}">
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4">
+                        <button type="submit" class="btn btn-primary btn-block">Save Profile</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Language selector
+    const langButtons = document.querySelectorAll('.lang-btn');
+    const localeInput = document.getElementById('locale');
+    
+    langButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            langButtons.forEach(btn => btn.classList.remove('active'));
+            this.classList.add('active');
+            localeInput.value = this.dataset.lang;
+        });
+    });
+});
+</script>
+{% endblock %}

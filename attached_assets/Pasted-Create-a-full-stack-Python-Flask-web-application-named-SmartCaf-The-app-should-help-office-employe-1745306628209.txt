@@ -1,0 +1,123 @@
+Create a full-stack Python Flask web application named SmartCafé. The app should help office employees log their meals and make healthier food choices by providing real-time nutritional insights. It should be fully mobile-first, work offline-first if possible, and have a clean, intuitive UI for daily use.
+
+
+
+💡 Core Highlights
+
+Mobile-centric design (optimized for screens <768px)
+Multilingual support: English, Hindi, Kannada, Tamil, Telugu, Marathi, Gujarati
+CSV-driven food database: No external API needed; use provided CSV snapshot
+Meal logging & dashboard: Fully working food log with calorie tracking
+BMI and personalized goal-based calorie recommendation
+All features must be functional (no mockups)
+
+
+
+🖼️ Frontend Requirements (Mobile-First)
+
+Use Tailwind CSS or Bootstrap 5 for responsive, mobile-first design. UI should be minimal, touch-friendly, and fast.
+
+Home Dashboard:
+
+Show daily calorie intake, target calories (based on personal goals), remaining calories
+Display meals logged today with portion, food name, and calories
+Weekly nutrient trend graph using Chart.js
+Sign-Up Flow (Post registration):
+
+Collect: age, gender, height, weight, activity level, goal (lose, maintain, gain)
+Calculate:
+
+BMI
+Calorie requirement
+Adjust based on goal
+Store in database and show it in dashboard
+Log a Meal Page:
+
+Input field to search food items from a CSV file (not DB)
+Autocomplete from CSV (multilingual support if possible)
+Show list of matching items (with name, portion sizes, calories)
+Clicking "Select" should add the item to the meal log
+Show confirmation and update daily calorie total
+Cafeteria Menu Page (Optional):
+
+Interactive grid of predefined cafeteria dishes (from CSV or DB)
+Images + calorie info + portion picker
+Tap to log a dish directly
+Stats Page:
+
+Graphs: Weekly average intake vs target
+Macronutrient breakdown
+Profile Page:
+
+View/edit personal details
+BMI, current weight, and calorie goals
+Language selector (dropdown)
+
+
+
+🧠 Backend Requirements
+
+Framework: Python Flask
+Database: SQLite using SQLAlchemy
+Forms: Flask-WTF
+Multilingual: Flask-Babel (optional for future scalability)
+
+CSV-based Meal Search:
+
+Load and index a CSV file (meals.csv) with columns: Food Name, Portion Size, Calories, Protein, Carbs, Fats, Language
+On search input, read and match from CSV dynamically
+Display top matching results on the site (autocomplete style)
+Food Log Functionality:
+
+When a user selects a food item from search:
+
+Insert it into the meal_log table (with timestamp and portion)
+Recalculate daily total calories
+Store daily meals for each user
+Routes / Endpoints:
+
+/signup, /login, /logout
+/dashboard: Show user stats, logged meals
+/log-meal: Show meal search + log
+/profile: Manage personal info
+/search: AJAX route to search CSV file
+Models:
+
+User: id, name, email, age, gender, height, weight, activity, goal, BMI, daily_calories
+MealLog: id, user_id, food_name, portion, calories, timestamp
+Calculations:
+
+BMI = weight / (height in meters)^2
+Daily Calories = Based on BMR (Mifflin-St Jeor) + activity multiplier
+Adjust for goal (e.g., -500 kcal for weight loss)
+
+
+
+🧰 Tech Stack
+
+Backend: Flask, Flask-WTF, Flask-Login, SQLAlchemy
+Frontend: Tailwind CSS / Bootstrap 5, Jinja2
+Visualization: Chart.js
+Storage: SQLite DB + external food database in CSV
+Multilingual: Flask-Babel (optional)
+Extras: Use csv.DictReader() in Flask for fast food search
+
+
+
+📂 Expected Output
+
+Fully working Flask project
+All pages functional: dashboard, log meal, signup, profile
+Meal logging via CSV food database
+Code should include:
+
+templates/ with mobile-optimized HTML
+static/ for CSS/JS
+app.py or main.py
+models.py
+meals.csv file with dummy data
+README with:
+
+Setup steps
+Sample CSV format
+How to run locally

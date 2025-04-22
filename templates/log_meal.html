@@ -1,0 +1,311 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ _('Log a Meal') }} - SmartCafé{% endblock %}
+
+{% block head_content %}
+<style>
+    .meal-form {
+        max-width: 100%;
+    }
+    .portion-btn-group {
+        display: flex;
+        width: 100%;
+        margin-top: 0.5rem;
+    }
+    .portion-btn-group .btn {
+        flex: 1;
+        border-radius: 0;
+    }
+    .portion-btn-group .btn:first-child {
+        border-top-left-radius: 0.25rem;
+        border-bottom-left-radius: 0.25rem;
+    }
+    .portion-btn-group .btn:last-child {
+        border-top-right-radius: 0.25rem;
+        border-bottom-right-radius: 0.25rem;
+    }
+    .meal-details-section {
+        background-color: #f8f9fa;
+        border-radius: 0.5rem;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+    .search-container {
+        position: relative;
+        margin-bottom: 1.5rem;
+    }
+    .search-button {
+        position: absolute;
+        right: 0;
+        top: 0;
+        height: 100%;
+        border-top-left-radius: 0;
+        border-bottom-left-radius: 0;
+    }
+    .photo-upload-container {
+        background-color: #f8f9fa;
+        border-radius: 0.5rem;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+    .file-upload-btn {
+        margin-top: 1rem;
+    }
+    .notes-textarea {
+        resize: vertical;
+        min-height: 100px;
+    }
+    .photo-upload-info {
+        background-color: rgba(0, 0, 0, 0.05);
+        border-radius: 0.25rem;
+        padding: 1rem;
+        margin-top: 1rem;
+        display: flex;
+        align-items: center;
+    }
+    .photo-upload-info i {
+        margin-right: 0.5rem;
+        color: #6c757d;
+    }
+    @media (max-width: 768px) {
+        .log-meal-container {
+            padding: 0;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container log-meal-container">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h1>{{ _('Log a Meal') }}</h1>
+                <a href="{{ url_for('menu') }}" class="btn btn-outline-primary d-none d-md-block">
+                    <i class="fas fa-utensils me-2"></i>{{ _('View Cafeteria Menu') }}
+                </a>
+            </div>
+            <p class="text-muted mb-4">{{ _('Record what you\'ve eaten to track your nutrition') }}</p>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6 mb-4">
+            <!-- Search Section -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">{{ _('Search for a Meal') }}</h5>
+                </div>
+                <div class="card-body">
+                    <form method="GET" action="{{ url_for('log_meal') }}" class="search-container">
+                        <input type="text" name="search_term" class="form-control" placeholder="{{ _('Enter food name...') }}" value="{{ request.args.get('search_term', '') }}">
+                        <button type="submit" class="btn btn-primary search-button">
+                            <i class="fas fa-search"></i> {{ _('Search') }}
+                        </button>
+                    </form>
+
+                    {% if search_results or csv_search_results %}
+                    <div class="search-results mt-3">
+                        <h6>{{ _('Search Results') }}</h6>
+                        <div class="list-group">
+                            {% for meal in search_results %}
+                            <a href="{{ url_for('log_meal', meal_id=meal.id) }}" class="list-group-item list-group-item-action">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="mb-0">{{ meal.get_name(locale) }}</h6>
+                                        <small>{{ meal.calories }} {{ _('calories') }} | P: {{ meal.proteins }}g | C: {{ meal.carbs }}g | F: {{ meal.fats }}g</small>
+                                    </div>
+                                    <span class="badge bg-primary rounded-pill">{{ _('Select') }}</span>
+                                </div>
+                            </a>
+                            {% endfor %}
+                            
+                            {% for item in csv_search_results %}
+                            <a href="{{ url_for('log_meal', custom_meal_name=item['Dish Name'], 
+                                                custom_meal_calories=item['Calories (kcal)'],
+                                                custom_meal_proteins=item['Protein (g)'],
+                                                custom_meal_carbs=item['Carbohydrate (g)'],
+                                                custom_meal_fats=item['Fats (g)']) }}" 
+                               class="list-group-item list-group-item-action select-food-item" 
+                               data-name="{{ item['Dish Name'] }}"
+                               data-calories="{{ item['Calories (kcal)'] }}"
+                               data-proteins="{{ item['Protein (g)'] }}"
+                               data-carbs="{{ item['Carbohydrate (g)'] }}"
+                               data-fats="{{ item['Fats (g)'] }}"
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="mb-0">{{ item['Dish Name'] }}</h6>
+                                        <small>{{ item['Calories (kcal)'] }} {{ _('calories') }} | 
+                                               P: {{ item['Protein (g)'] }}g | 
+                                               C: {{ item['Carbohydrate (g)'] }}g | 
+                                               F: {{ item['Fats (g)'] }}g</small>
+                                    </div>
+                                    <span class="badge bg-primary rounded-pill">{{ _('Select') }}</span>
+                                </div>
+                            </a>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Photo Upload Section -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">{{ _('Upload a Meal Photo') }}</h5>
+                </div>
+                <div class="card-body">
+                    <p>{{ _('Take a photo of your meal to keep track of what you\'ve eaten. In the future, we\'ll provide AI-based recognition.') }}</p>
+                    
+                    <form method="post" enctype="multipart/form-data" id="photo-upload-form">
+                        <div class="mb-3">
+                            <label for="meal-photo" class="form-label visually-hidden">{{ _('Upload Meal Image') }}</label>
+                            <input class="form-control" type="file" id="meal-photo" name="meal_image" accept="image/*">
+                        </div>
+                    </form>
+                    
+                    <div class="photo-upload-info">
+                        <i class="fas fa-info-circle"></i>
+                        <small>{{ _('Photo upload is optional. This feature will be enhanced with AI recognition in future updates.') }}</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6">
+            <!-- Meal Details Section -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">{{ _('Meal Details') }}</h5>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="{{ url_for('log_meal') }}" enctype="multipart/form-data">
+                        <!-- Hidden file input for the meal image, filled by the photo upload form -->
+                        <input type="file" name="meal_image" style="display: none;" id="main-meal-image">
+                        
+                        <div class="mb-3">
+                            <label for="meal-name" class="form-label">{{ _('Meal Name') }}</label>
+                            <input type="text" class="form-control" id="meal-name" name="custom_meal_name" value="{{ form.custom_meal_name.data or '' }}" required>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-6">
+                                <label for="calories" class="form-label">{{ _('Calories') }}</label>
+                                <input type="number" class="form-control" id="calories" name="custom_meal_calories" value="{{ form.custom_meal_calories.data or 0 }}" min="0" required>
+                            </div>
+                            <div class="col-6">
+                                <label for="proteins" class="form-label">{{ _('Proteins (g)') }}</label>
+                                <input type="number" class="form-control" id="proteins" name="custom_meal_proteins" value="{{ form.custom_meal_proteins.data or 0 }}" min="0" step="0.1" required>
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-6">
+                                <label for="carbs" class="form-label">{{ _('Carbohydrates (g)') }}</label>
+                                <input type="number" class="form-control" id="carbs" name="custom_meal_carbs" value="{{ form.custom_meal_carbs.data or 0 }}" min="0" step="0.1" required>
+                            </div>
+                            <div class="col-6">
+                                <label for="fats" class="form-label">{{ _('Fats (g)') }}</label>
+                                <input type="number" class="form-control" id="fats" name="custom_meal_fats" value="{{ form.custom_meal_fats.data or 0 }}" min="0" step="0.1" required>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">{{ _('Portion Size') }}</label>
+                            <div class="portion-btn-group">
+                                <input type="radio" class="btn-check" name="portion_size" id="portion-small" value="small" {% if form.portion_size.data == 'small' %}checked{% endif %}>
+                                <label class="btn btn-outline-primary" for="portion-small">{{ _('Small') }}</label>
+                                
+                                <input type="radio" class="btn-check" name="portion_size" id="portion-medium" value="medium" {% if form.portion_size.data == 'medium' or not form.portion_size.data %}checked{% endif %}>
+                                <label class="btn btn-outline-primary" for="portion-medium">{{ _('Medium') }}</label>
+                                
+                                <input type="radio" class="btn-check" name="portion_size" id="portion-large" value="large" {% if form.portion_size.data == 'large' %}checked{% endif %}>
+                                <label class="btn btn-outline-primary" for="portion-large">{{ _('Large') }}</label>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">{{ _('Meal Type') }}</label>
+                            <select class="form-select" name="meal_type" required>
+                                <option value="breakfast" {% if form.meal_type.data == 'breakfast' %}selected{% endif %}>{{ _('Breakfast') }}</option>
+                                <option value="lunch" {% if form.meal_type.data == 'lunch' %}selected{% endif %}>{{ _('Lunch') }}</option>
+                                <option value="dinner" {% if form.meal_type.data == 'dinner' %}selected{% endif %}>{{ _('Dinner') }}</option>
+                                <option value="snack" {% if form.meal_type.data == 'snack' %}selected{% endif %}>{{ _('Snack') }}</option>
+                            </select>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label for="notes" class="form-label">{{ _('Notes') }}</label>
+                            <textarea class="form-control notes-textarea" id="notes" name="notes" placeholder="{{ _('Optional notes about this meal...') }}">{{ form.notes.data or '' }}</textarea>
+                        </div>
+                        
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                {{ _('Log Meal') }}
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // If we have a file input in the form and in the photo upload form, synchronize them
+        const mainFormFileInput = document.getElementById('main-meal-image');
+        const photoFormFileInput = document.querySelector('#photo-upload-form input[type="file"]');
+        
+        if (mainFormFileInput && photoFormFileInput) {
+            photoFormFileInput.addEventListener('change', function() {
+                // Clone the file to the main form's file input
+                const dataTransfer = new DataTransfer();
+                for(let i = 0; i < this.files.length; i++) {
+                    dataTransfer.items.add(this.files[i]);
+                }
+                mainFormFileInput.files = dataTransfer.files;
+            });
+        }
+
+        // Set active state for mobile nav
+        document.querySelectorAll('.mobile-nav-link').forEach(link => {
+            if (link.getAttribute('href').includes('log-meal')) {
+                link.classList.add('active');
+            }
+        });
+        
+        // Handle clicking on food items in search results
+        document.querySelectorAll('.select-food-item').forEach(item => {
+            item.addEventListener('click', function(e) {
+                e.preventDefault(); // Prevent the default link behavior
+                
+                // Get data attributes
+                const name = this.getAttribute('data-name');
+                const calories = this.getAttribute('data-calories');
+                const proteins = this.getAttribute('data-proteins');
+                const carbs = this.getAttribute('data-carbs');
+                const fats = this.getAttribute('data-fats');
+                
+                // Fill in the form fields
+                document.getElementById('meal-name').value = name;
+                document.getElementById('calories').value = calories;
+                document.getElementById('proteins').value = proteins;
+                document.getElementById('carbs').value = carbs;
+                document.getElementById('fats').value = fats;
+                
+                // Scroll to the form
+                const mealDetailsHeader = Array.from(document.querySelectorAll('.card-header')).find(el => el.textContent.includes('Meal Details'));
+                if (mealDetailsHeader) {
+                    mealDetailsHeader.scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}

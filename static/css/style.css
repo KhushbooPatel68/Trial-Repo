@@ -1,0 +1,245 @@
+/* Main Styles for SmartCafé App */
+
+/* Global Styles */
+:root {
+    --primary-color: #3f51b5;
+    --secondary-color: #ff4081;
+    --bg-light: #f5f5f5;
+    --text-dark: #333;
+    --text-light: #f9f9f9;
+    --success-color: #4caf50;
+    --warning-color: #ff9800;
+    --danger-color: #f44336;
+    --info-color: #2196f3;
+}
+
+body {
+    font-family: 'Roboto', 'Arial', sans-serif;
+    color: var(--text-dark);
+    background-color: var(--bg-light);
+    padding-bottom: 70px; /* For mobile nav */
+}
+
+/* Navbar Styles */
+.navbar-brand {
+    font-weight: 700;
+    font-size: 1.3rem;
+}
+
+/* Mobile Navigation */
+.mobile-nav {
+    background-color: white;
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+    padding: 10px 0;
+    z-index: 1000;
+}
+
+.mobile-nav-link {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: var(--text-dark);
+    text-decoration: none;
+    font-size: 0.7rem;
+}
+
+.mobile-nav-link i {
+    font-size: 1.2rem;
+    margin-bottom: 2px;
+}
+
+.mobile-nav-link.active {
+    color: var(--primary-color);
+}
+
+/* Card Styles */
+.card {
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+    border: none;
+}
+
+.card-header {
+    border-radius: 8px 8px 0 0 !important;
+    background-color: var(--primary-color);
+    color: white;
+    font-weight: 600;
+}
+
+/* Food Item Styles */
+.food-item {
+    border-radius: 8px;
+    margin-bottom: 15px;
+    padding: 12px;
+    border: 1px solid #ddd;
+    transition: all 0.3s ease;
+}
+
+.food-item:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.food-item h5 {
+    margin-bottom: 5px;
+    font-weight: 600;
+}
+
+.food-item .nutrition-info {
+    color: #666;
+    font-size: 0.9rem;
+}
+
+.portion-selector {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 10px;
+}
+
+.portion-option {
+    flex: 1;
+    text-align: center;
+    padding: 5px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    margin: 0 2px;
+    cursor: pointer;
+    font-size: 0.8rem;
+}
+
+.portion-option.active {
+    background-color: var(--primary-color);
+    color: white;
+    border-color: var(--primary-color);
+}
+
+/* Dashboard Styles */
+.daily-summary {
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    background-color: white;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.macro-progress {
+    margin-bottom: 10px;
+}
+
+.macro-progress .progress {
+    height: 10px;
+    border-radius: 5px;
+}
+
+/* Chart Containers */
+.chart-container {
+    margin-bottom: 30px;
+}
+
+/* Search Results */
+.search-results {
+    position: absolute;
+    width: 100%;
+    max-height: 300px;
+    overflow-y: auto;
+    background-color: white;
+    border: 1px solid #ddd;
+    border-radius: 0 0 8px 8px;
+    z-index: 1000;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.search-result-item {
+    padding: 10px 15px;
+    border-bottom: 1px solid #eee;
+    cursor: pointer;
+}
+
+.search-result-item:hover {
+    background-color: #f9f9f9;
+}
+
+.search-result-name {
+    font-weight: 600;
+}
+
+.search-result-info {
+    font-size: 0.8rem;
+    color: #666;
+}
+
+.search-result-source {
+    font-size: 0.7rem;
+    color: #999;
+    text-align: right;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .card-title {
+        font-size: 1.2rem;
+    }
+    
+    .display-4 {
+        font-size: 2rem;
+    }
+    
+    .h5 {
+        font-size: 1.1rem;
+    }
+}
+
+/* Achievement badges */
+.achievement {
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    border: 1px solid #ddd;
+    background-color: white;
+}
+
+.achievement-icon {
+    font-size: 2rem;
+    color: var(--primary-color);
+    margin-bottom: 10px;
+}
+
+.achievement.locked {
+    opacity: 0.6;
+    filter: grayscale(80%);
+}
+
+/* Language selector */
+.language-flag {
+    width: 20px;
+    height: 15px;
+    margin-right: 8px;
+    border-radius: 2px;
+}
+
+/* Form styles */
+.form-control:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.2rem rgba(63, 81, 181, 0.25);
+}
+
+.btn-primary {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+.btn-primary:hover, .btn-primary:focus {
+    background-color: #303f9f;
+    border-color: #303f9f;
+}
+
+.btn-secondary {
+    background-color: var(--secondary-color);
+    border-color: var(--secondary-color);
+}
+
+.btn-secondary:hover, .btn-secondary:focus {
+    background-color: #ff1a66;
+    border-color: #ff1a66;
+}
